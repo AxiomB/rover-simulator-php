@@ -1,5 +1,7 @@
 <?php
 
+use exceptions\CalculateNewPositionException;
+
 class Position
 {
     public int $xCoord;
@@ -15,20 +17,24 @@ class Position
         $this->rotation = $rotation;
     }
 
-    public function calculateNewPosition(int $rotation, int $speed): Position
+    /**
+     * @throws CalculateNewPositionException
+     */
+    public function calculateNewPosition(int $rotation, int $moves): Position
     {
         $xCoord = $this->xCoord;
         $yCoord = $this->yCoord;
         switch($rotation)
         {
-            case 0:     $yCoord += $speed;
+            case 0:     $yCoord += $moves;
                 break;
-            case 90:    $xCoord += $speed;
+            case 90:    $xCoord += $moves;
                 break;
-            case 180:   $yCoord -= $speed;
+            case 180:   $yCoord -= $moves;
                 break;
-            case 270:   $xCoord -= $speed;
+            case 270:   $xCoord -= $moves;
                 break;
+            default:    throw new CalculateNewPositionException("Rotation Incorrect, rotation given".$rotation.' error ');
         }
         $this->rotation = $rotation;
         return new Position($xCoord, $yCoord, $this->rotation);

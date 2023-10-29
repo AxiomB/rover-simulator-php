@@ -1,1 +1,1 @@
-{"version":1,"defects":[],"times":{"PositionTest::testOk":0.35}}
+{"version":1,"defects":{"PositionTest::testCalculateNewPositionIncorrectRotation":8,"PositionTest::testCalculateNewPositionWithCorrectRotations":7},"times":{"PositionTest::testOk":0.35,"PositionTest::testDisplayInString":0.319,"PositionTest::testCalculateNewPositionIncorrectRotation":0.076,"PositionTest::testCalculateNewPositionWithCorrectRotations":0.032}}

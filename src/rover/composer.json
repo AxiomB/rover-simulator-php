@@ -2,6 +2,7 @@
     "autoload": {
         "classmap": [
             "tests/",
+            "exceptions/",
             "."
         ]
     },
