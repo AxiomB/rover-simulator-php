@@ -1,5 +1,7 @@
 <?php
 
+use \exceptions\PositionOutOfPlanetBounds;
+
 class Planet
 {
     private int $size;
@@ -16,7 +18,7 @@ class Planet
         return $this->size;
     }
 
-    private function isObstacleAtCoordinates(int $xCoord,int $yCoord): bool
+    public function isObstacleAtCoordinates(int $xCoord,int $yCoord): bool
     {
         $filteredObstacles = array_filter($this->obstacles, function($element) use($xCoord,$yCoord) {
             if(isset($element->xCoord) && isset($element->yCoord))
@@ -28,11 +30,14 @@ class Planet
         return count($filteredObstacles) > 0;
     }
 
+    /**
+     * @throws PositionOutOfPlanetBounds
+     */
     public function placeObjectAtPosition(Position $newPosition): bool
     {
         if(($newPosition->xCoord > $this->size || $newPosition->yCoord > $this->size) || ($newPosition->xCoord < 0 || $newPosition->yCoord < 0))
         {
-            return false;
+            throw new PositionOutOfPlanetBounds('Error The Position:'.$newPosition->toString().' The Size of the Planet is: '.$this->getSize());
         }
 
         if($this->isObstacleAtCoordinates($newPosition->xCoord, $newPosition->yCoord))
@@ -44,11 +49,14 @@ class Planet
         return true;
     }
 
+    /**
+     * @throws PositionOutOfPlanetBounds
+     */
     public function removeObjectFromPosition(Position $position): bool
     {
         if(($position->xCoord > $this->size || $position->yCoord > $this->size) || ($position->xCoord < 0 || $position->yCoord < 0))
         {
-            return false;
+            throw new PositionOutOfPlanetBounds('Error The Position:'.$position->toString().' The Size of the Planet is: '.$this->getSize());
         }
 
         if(!$this->isObstacleAtCoordinates($position->xCoord, $position->yCoord))

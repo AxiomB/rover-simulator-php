@@ -1,12 +1,7 @@
 <?php
 
-class SimulationData
-{
-    public string $newPlanetSize = "";
-    public string $initialRoverPosition ="";
-    public int $startingDirectionInDegrees = 0;
-    public string $roverCommands = "";
-}
+use exceptions\PositionOutOfPlanetBounds;
+use exceptions\RoverCommandFailed;
 
 class SimulationRunner
 {
@@ -22,13 +17,20 @@ class SimulationRunner
         $this->directionToDegreesConversion = ["N" => 0, "E" => 90, "S" => 180, "W" => 270 ];
     }
 
-    private function generateRandomPlanet($size): void //TODO Improve planet generation
+    /**
+     * @throws PositionOutOfPlanetBounds
+     */
+    private function generateRandomPlanet($size): void
     {
         $this->planet = new Planet($size);
         $obstaclesNumber = rand(0, $size);
         for($i = 0; $i < $obstaclesNumber; $i++)
         {
-            $this->planet->placeObjectAtPosition(new Position(rand(0, $size), rand(0, $size), 0));
+            $obstaclePlaced = false;
+            while(!$obstaclePlaced)
+            {
+                $obstaclePlaced = $this->planet->placeObjectAtPosition(new Position(rand(0, $size), rand(0, $size), 0));
+            }
         }
     }
 
@@ -138,25 +140,26 @@ class SimulationRunner
         $commands = str_split($simulationRunData->roverCommands, 1);
         $commandResult = true;
 
-        $this->planet->placeObjectAtPosition($rover->getCurrentPosition());
+        try {
+            $this->planet->placeObjectAtPosition($rover->getCurrentPosition());
+        } catch (PositionOutOfPlanetBounds $e) {
+            print "Error on rover deployment at initial position \n";
+            return;
+        }
 
         for($i = 0;$i < count($commands) && $commandResult; $i++)
         {
-            $commandResult = $rover->processCommand($commands[$i], $this->planet);
-            print "New Position and Rotation Is:" . $rover->getCurrentPosition()->toString() . "\n";
-        }
-
-        if($commandResult)
-        {
-            print "Commands Executed Without Errors \n";
-        }
-        else
-        {
-            print "Commands Executed With Errors: \n";
+            try {
+                $rover->processCommand($commands[$i], $this->planet);
+                print "New Position and Rotation Is:" . $rover->getCurrentPosition()->toString() . "\n";
+            } catch (RoverCommandFailed $e) {
+                $commandResult = false;
+                print $e->getMessage() . "\n";
+            }
         }
     }
 
-    public function execute(SimulationData $preloadedData = null)
+    public function execute(SimulationData $preloadedData = null): void
     {
         if($preloadedData == null)
         {
@@ -164,6 +167,7 @@ class SimulationRunner
         }
         else
         {
+            $this->generateRandomPlanet($preloadedData->newPlanetSize);
             $simulationRunData = $preloadedData;
         }
         $this->executeSimulationWithData($simulationRunData);

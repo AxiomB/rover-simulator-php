@@ -1,4 +1,5 @@
 <?php declare(strict_types=1);
+
 use PHPUnit\Framework\TestCase;
 use exceptions\CalculateNewPositionException;
 
@@ -19,7 +20,6 @@ final class PositionTest extends TestCase
 
     public function testCalculateNewPositionWithCorrectRotations()
     {
-
         try {
             $testPosition = new Position(2,2,90);
             $testPosition = $testPosition->calculateNewPosition(90,1);
