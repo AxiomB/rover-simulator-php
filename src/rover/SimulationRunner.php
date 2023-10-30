@@ -78,50 +78,65 @@ class SimulationRunner
         print "First, write the size of the planet (minimum size is 2, maximum is 9999)  \n";
 
         $simulationRunData = new SimulationData();
+        $inputToTake = true;
 
-        while($newPlanetSize = readline())
+        while($inputToTake)
         {
-            if($newPlanetSize >= 2 && $newPlanetSize <= 9999)
+            $newPlanetSize = readline();
+            if(intval($newPlanetSize,10) >= 2 && intval($newPlanetSize,10) <= 9999)
             {
                 $this->generateRandomPlanet($newPlanetSize);
                 $simulationRunData->newPlanetSize = $newPlanetSize;
+                $inputToTake = false;
             }
             else
             {
                 print "Incorrect Value, please try again\n";
             }
         }
+
+        $inputToTake = true;
         print "Second, write a valid position for the Rover on the next format: x_coordinate,y_coordinate \n";
-        while($initialRoverPosition = readline())
+        while($inputToTake)
         {
+            $initialRoverPosition = readline();
             $coords = explode(",",$initialRoverPosition);
-            if($this->validateInitialRoverCoordinates(intval($coords[0], 10), intval($coords[1], 10)))
+            if(count($coords) == 2 && $this->validateInitialRoverCoordinates(intval($coords[0], 10), intval($coords[1], 10)))
             {
                 $simulationRunData->initialRoverPosition = $initialRoverPosition;
+                $inputToTake = false;
             }
             else
             {
                 print "Incorrect Value, please try again\n";
             }
         }
+
+        $inputToTake = true;
         print "Thirdly, write a starting direction for the rover, valid directions are [N,S,E,W] \n";
-        while($startingDirection = readline())
+        while($inputToTake)
         {
+            $startingDirection = readline();
             if($this->validateDirection($startingDirection))
             {
                 $simulationRunData->startingDirectionInDegrees = $this->directionToDegrees($startingDirection);
+                $inputToTake = false;
             }
             else
             {
                 print "Incorrect Value, please try again\n";
             }
         }
+
+        $inputToTake = true;
         print "Now write the series of commands for the rover, valid commands are [F,L,R] \n";
-        while($roverCommands = readline())
+        while($inputToTake)
         {
+            $roverCommands = readline();
             if($this->validateRoverCommands($roverCommands))
             {
                 $simulationRunData->roverCommands = $roverCommands;
+                $inputToTake = false;
             }
             else
             {
@@ -133,7 +148,6 @@ class SimulationRunner
 
     private function executeSimulationWithData(SimulationData $simulationRunData): void
     {
-
         $coords = explode(",",$simulationRunData->initialRoverPosition);
         $rover = new Rover(intval($coords[0], 10), intval($coords[1], 10), $simulationRunData->startingDirectionInDegrees, 1);
 
